@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>TV Show Gifs!</title>
+</head>
+<body>
+
+	<div id="tv-buttons"></div>
+
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script type = "text/javascript">
+	$(document).ready()
+		var tvShows = ["Breaking Bad", "The Office", "Parks and Recreation", "The Walking Dead", "Bob's Burgers", "Trailer Park Boys,", "Orange is the New Black", "Stranger Things", "Friends"];
+
+		function tvShowGifGenerator() {
+			var tvShow = $(this).attr("data-name");
+			var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + tvShow + "s&api_key=8b139126b8b049dfa1d5729626b6681c";
+			$.ajax({
+			url: queryURL,
+			method: "GET"
+		}).done(function(response){
+			console.log(response);
+		});
+		}
+
+		function buttonMaker() {
+			$("tv-buttons").empty();
+			for (var i = 0; i < tvShows.length; i++) {
+				var tvButton = $("<button>");
+				tvButton.addClass("tv-buttons");
+				tvButton.attr("data-name", tvShows[i]);
+				tvButton.text(tvShows[i]);
+				$("#tv-buttons").append(tvButton);
+			}
+		};
+
+		$(document).on("click", ".tv-buttons", tvShowGifGenerator);
+		//Run buttonMaker on load
+		buttonMaker();
+
+
+	</script>
+</body>
+</html>
