@@ -7,7 +7,14 @@
 <body>
 
 	<div id="tv-buttons"></div>
+	
+	<form id="movie-form">
+      <label for="movie-input">Add a TV Show</label>
+      <input type="text" id="tv-input"><br>
 
+      <!-- Button triggers new movie to be added -->
+      <input id="add-tv-show" type="submit" value="Add a TV Show">
+    </form>
 
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 	<script type = "text/javascript">
@@ -16,7 +23,7 @@
 
 		function tvShowGifGenerator() {
 			var tvShow = $(this).attr("data-name");
-			var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + tvShow + "s&api_key=8b139126b8b049dfa1d5729626b6681c";
+			var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + tvShow + "s&api_key=8b139126b8b049dfa1d5729626b6681c&limit=10";
 			$.ajax({
 			url: queryURL,
 			method: "GET"
@@ -26,7 +33,7 @@
 		}
 
 		function buttonMaker() {
-			$("tv-buttons").empty();
+			$("#tv-buttons").empty();
 			for (var i = 0; i < tvShows.length; i++) {
 				var tvButton = $("<button>");
 				tvButton.addClass("tv-buttons");
@@ -40,6 +47,12 @@
 		//Run buttonMaker on load
 		buttonMaker();
 
+		$("#add-tv-show").on("click", function(event) {
+			event.preventDefault();
+			var tvShow = $("#tv-input").val().trim();
+			tvShows.push(tvShow);
+			buttonMaker();
+		})
 
 	</script>
 </body>
