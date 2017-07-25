@@ -5,16 +5,22 @@
 	<title>TV Show Gifs!</title>
 </head>
 <body>
-
+	<!-- Our buttons appear here -->
 	<div id="tv-buttons"></div>
+	<br>
 	
-	<form id="movie-form">
-      <label for="movie-input">Add a TV Show</label>
+	<!-- User can input their own TV Show -->
+	<form id="tv-form">
+      <label for="tv-input">Add a TV Show</label>
       <input type="text" id="tv-input"><br>
 
       <!-- Button triggers new movie to be added -->
       <input id="add-tv-show" type="submit" value="Add a TV Show">
     </form>
+	<br>
+
+	<div id="gif-holder">
+	</div>
 
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 	<script type = "text/javascript">
@@ -22,6 +28,7 @@
 		var tvShows = ["Breaking Bad", "The Office", "Parks and Recreation", "The Walking Dead", "Bob's Burgers", "Trailer Park Boys,", "Orange is the New Black", "Stranger Things", "Friends"];
 
 		function tvShowGifGenerator() {
+			$("#gif-holder").empty();
 			var tvShow = $(this).attr("data-name");
 			var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + tvShow + "s&api_key=8b139126b8b049dfa1d5729626b6681c&limit=10";
 			$.ajax({
@@ -29,9 +36,41 @@
 			method: "GET"
 		}).done(function(response){
 			console.log(response);
+			var tvShowResults = response.data;
+			// Loops through our ajax query result number (set to 10 in queryURL)
+			for (var i = 0; i < tvShowResults.length; i++) {
+				// Create dynamic div for each image/rating, then dynamic image and p elements
+				var tvDiv = $("<div>");
+				var tvImage = $("<img>");
+				tvImage.attr("src", tvShowResults[i].images.fixed_width_still.url);
+				tvImage.attr("data-animate", tvShowResults[i].images.fixed_width.url);
+				tvImage.attr("data-state", "still");
+				tvImage.attr("data-still", tvShowResults[i].images.fixed_width_still.url);
+				tvImage.addClass("gif-image");
+				var tvRating = $("<p>").text("Rating: " + tvShowResults[i].rating);
+				// Append image and p elements to our dynamic tvDiv
+				tvDiv.append(tvImage);
+				tvDiv.append(tvRating);
+				$("#gif-holder").append(tvDiv);
+			}
+
+			// On Click animate or still
+			$(".gif-image").on("click", function() {
+
+			var state = $(this).attr("data-state");
+			if (state === "still") {
+				$(this).attr("src", $(this).attr("data-animate"));
+				$(this).attr("data-state", "animate");
+			}
+			else {
+				$(this).attr("src", $(this).attr("data-still"));
+				$(this).attr("data-state", "still");
+			}
+			});
 		});
 		}
 
+		// Clears tv-button div, creates buttons from the tvShows array with their text value and class
 		function buttonMaker() {
 			$("#tv-buttons").empty();
 			for (var i = 0; i < tvShows.length; i++) {
@@ -43,17 +82,19 @@
 			}
 		};
 
+		// When TV Show button is clicked, gifs/data renders
 		$(document).on("click", ".tv-buttons", tvShowGifGenerator);
 		//Run buttonMaker on load
 		buttonMaker();
 
+		// When user pushes input button, their input is added to the tvShow array and a button is created from it
 		$("#add-tv-show").on("click", function(event) {
 			event.preventDefault();
 			var tvShow = $("#tv-input").val().trim();
 			tvShows.push(tvShow);
 			buttonMaker();
 		})
-
+		
 	</script>
 </body>
 </html>
